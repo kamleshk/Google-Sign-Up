@@ -16,6 +16,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        var configureError: NSError?
+        GGLContext.sharedInstance().configureWithError(&configureError)
+        assert(configureError == nil, "Error configuring Google services: \(configureError)")
+        
+
         return true
     }
 
@@ -40,7 +46,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
 
+    
+    
+    @available(iOS 9.0, *)
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+        
+        if(GIDSignIn.sharedInstance().handle(url,
+                                             sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,
+                                             annotation: options[UIApplicationOpenURLOptionsKey.annotation]))
+        {
+            return true;
+            
+        }else if(url.absoluteString.contains("www.mydomain.com")){
+            print("incoming url \(url.absoluteString)")
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    // [START openurl]
+    @available(iOS 8.0, *)
+    func application(_ application: UIApplication,
+                     open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        
+        
+         if (GIDSignIn.sharedInstance().handle(url,
+                                                   sourceApplication: sourceApplication,
+                                                   annotation: annotation))
+        {
+            return true;
+        }else if(url.absoluteString.contains("www.mydomain.com")){
+            
+            print("incoming url \(url.absoluteString)")
+            return true
+        }
+        
+        return false;
+        
+    }
+
+  
+    
+    
+    
 
 }
 
